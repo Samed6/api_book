@@ -1,140 +1,145 @@
-# API de Gestion de Bibliothèque
+# API Bibliothèque - Guide Débutant
 
-Cette API RESTful permet aux utilisateurs de gérer une bibliothèque de livres avec des fonctionnalités CRUD pour les livres et les auteurs, ainsi qu'une authentification JWT pour protéger certaines routes.
+Cette application vous permet de gérer une bibliothèque en ligne avec des livres et des auteurs. C'est comme une base de données que vous pouvez contrôler via internet !
 
-## Fonctionnalités
+## Ce que vous pouvez faire
 
-- **CRUD des livres** : Créer, lire, mettre à jour et supprimer des livres
-- **CRUD des auteurs** : Gérer les auteurs et leurs informations
-- **Authentification JWT** : Protéger les routes de modification (POST, PUT, DELETE)
-- **Relations entre collections** : Les livres font référence à leurs auteurs
+- Ajouter, voir, modifier et supprimer des livres
+- Ajouter, voir, modifier et supprimer des auteurs
+- Créer un compte et vous connecter pour protéger vos données
 
-## Technologies utilisées
+## Pour démarrer le projet
 
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT (JSON Web Token)
-- bcrypt pour le hachage des mots de passe
+### Étape 1: Installer les outils
 
-## Installation
+Assurez-vous d'avoir installé :
 
-1. Cloner le dépôt
+- [Node.js](https://nodejs.org/) (version recommandée: 14.x ou plus)
+- [MongoDB](https://www.mongodb.com/try/download/community) OU un compte MongoDB Atlas (gratuit)
 
-```bash
-git clone <url-du-depot>
-cd api-bi
+### Étape 2: Installer les fichiers du projet
+
+Ouvrez votre terminal et tapez :
+
 ```
-
-2. Installer les dépendances
-
-```bash
 npm install
 ```
 
-3. Configurer les variables d'environnement
+Cette commande télécharge tous les outils dont le projet a besoin.
 
-Créez un fichier `.env` à la racine du projet avec les variables suivantes :
+### Étape 3: Configurer le projet
+
+Créez un fichier appelé `.env` avec ces informations :
 
 ```
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/bookstore
-JWT_SECRET=votre_secret_jwt
+PORT=3001
+MONGODB_URI=votre_lien_mongodb
+JWT_SECRET=choisissez_un_mot_secret
 JWT_EXPIRES_IN=24h
 ```
 
-4. Démarrer le serveur
+Remplacez "votre_lien_mongodb" par votre lien de connexion.
 
-```bash
-npm start
+### Étape 4: Démarrer le serveur
+
 ```
-
-Pour le développement, vous pouvez utiliser :
-
-```bash
 npm run dev
 ```
 
-## Structure du projet
+Votre API est maintenant accessible à l'adresse: http://localhost:3001
 
-```
-api-bi/
-├── config/         # Configuration de la base de données
-├── controllers/    # Contrôleurs pour les routes
-├── middleware/     # Middleware d'authentification
-├── models/         # Modèles Mongoose
-├── routes/         # Routes de l'API
-├── .env            # Variables d'environnement
-├── package.json    # Dépendances
-├── server.js       # Point d'entrée de l'application
-└── README.md       # Documentation
-```
+## Comment utiliser l'API
 
-## Routes de l'API
+Pour tester l'API, utilisez [Postman](https://www.postman.com/downloads/) (un outil gratuit).
 
-### Authentification
+### 1. Créer un compte
 
-- `POST /api/register` : Créer un nouvel utilisateur
-- `POST /api/login` : Connecter un utilisateur et obtenir un token JWT
-- `GET /api/me` : Obtenir les informations de l'utilisateur connecté (protégé)
+- Méthode: POST
+- URL: http://localhost:3001/api/register
+- Corps (format JSON):
 
-### Livres
-
-- `GET /api/books` : Récupérer tous les livres (public)
-- `GET /api/books/:id` : Récupérer un livre par son ID (public)
-- `POST /api/books` : Créer un nouveau livre (protégé)
-- `PUT /api/books/:id` : Mettre à jour un livre (protégé)
-- `DELETE /api/books/:id` : Supprimer un livre (protégé)
-
-### Auteurs
-
-- `GET /api/authors` : Récupérer tous les auteurs (public)
-- `GET /api/authors/:id` : Récupérer un auteur par son ID (public)
-- `POST /api/authors` : Créer un nouvel auteur (protégé)
-- `PUT /api/authors/:id` : Mettre à jour un auteur (protégé)
-- `DELETE /api/authors/:id` : Supprimer un auteur (protégé)
-
-## Authentification
-
-Pour accéder aux routes protégées, vous devez inclure un header d'autorisation avec le token JWT :
-
-```
-Authorization: Bearer <votre_token>
+```json
+{
+	"username": "votre_nom",
+	"email": "votre_email@exemple.com",
+	"password": "votre_mot_de_passe"
+}
 ```
 
-## Exemples d'utilisation
+### 2. Se connecter
 
-### Inscription d'un utilisateur
+- Méthode: POST
+- URL: http://localhost:3001/api/login
+- Corps (format JSON):
 
-```bash
-curl -X POST http://localhost:3000/api/register \
-  -H "Content-Type: application/json" \
-  -d '{"username": "test", "email": "test@example.com", "password": "password123"}'
+```json
+{
+	"email": "votre_email@exemple.com",
+	"password": "votre_mot_de_passe"
+}
 ```
 
-### Connexion et obtention du token
+Vous recevrez un token (une clé d'accès) - copiez-le !
 
-```bash
-curl -X POST http://localhost:3000/api/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "test@example.com", "password": "password123"}'
+### 3. Ajouter un auteur
+
+- Méthode: POST
+- URL: http://localhost:3001/api/authors
+- Headers:
+  - Clé: `Authorization`
+  - Valeur: `Bearer votre_token` (remplacez "votre_token" par le token copié)
+- Corps (format JSON):
+
+```json
+{
+	"name": "Victor Hugo",
+	"biography": "Écrivain français du 19e siècle",
+	"nationality": "Française"
+}
 ```
 
-### Création d'un auteur (route protégée)
+### 4. Ajouter un livre
 
-```bash
-curl -X POST http://localhost:3000/api/authors \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <votre_token>" \
-  -d '{"name": "Victor Hugo", "biography": "Écrivain français", "nationality": "Française"}'
+- Méthode: POST
+- URL: http://localhost:3001/api/books
+- Headers: même `Authorization` que précédemment
+- Corps (format JSON):
+
+```json
+{
+	"title": "Les Misérables",
+	"description": "Un roman historique français",
+	"publishedYear": 1862,
+	"genre": "Roman",
+	"author": "id_de_l_auteur"
+}
 ```
 
-### Création d'un livre (route protégée)
+Remplacez "id_de_l_auteur" par l'ID reçu lors de la création de l'auteur.
 
-```bash
-curl -X POST http://localhost:3000/api/books \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <votre_token>" \
-  -d '{"title": "Les Misérables", "description": "Un chef-d'œuvre de la littérature française", "publishedYear": 1862, "genre": "Roman", "author": "<id_auteur>"}'
-```
+### 5. Voir tous les livres
+
+- Méthode: GET
+- URL: http://localhost:3001/api/books
+- Pas besoin de token ni de corps !
+
+## Organisation des fichiers
+
+- `server.js` : Le point de départ de l'application
+- `models/` : Définit la structure des données (livres, auteurs, utilisateurs)
+- `controllers/` : Contient la logique des opérations (ajouter, modifier, etc.)
+- `routes/` : Définit les chemins d'accès URL de l'API
+- `middleware/` : Contient les fonctions de sécurité
+- `config/` : Gère la connexion à la base de données
+
+## Problèmes courants
+
+- **"Route non trouvée"** : Vérifiez que l'URL est correcte et que vous utilisez la bonne méthode (GET, POST, etc.)
+- **"Non autorisé"** : Vérifiez que votre token est correctement formaté avec `Bearer` suivi d'un seul espace
+- **Problème de connexion à MongoDB** : Vérifiez que votre lien MongoDB est correct dans le fichier .env
+
+## Ressources pour apprendre
+
+- [MDN Web Docs](https://developer.mozilla.org/fr/) pour apprendre JavaScript
+- [Express.js](https://expressjs.com/fr/) pour comprendre le framework
+- [MongoDB Documentation](https://docs.mongodb.com/) pour la base de données
